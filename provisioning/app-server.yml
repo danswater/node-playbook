@@ -1,0 +1,35 @@
+---
+
+- name: prepare app server
+  hosts: app
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Install dependencies
+      become: True
+      apt:
+        pkg: "{{ item }}"
+        update_cache: yes
+        cache_valid_time: 3600
+      with_items:
+        - git
+        - curl
+        - build-essential
+        - libssl-dev
+
+    - name: Download node installer
+      shell: curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+      tags: nvm
+
+    - name: Install node
+      become: yes
+      apt:
+        pkg: "{{ item }}"
+        update_cache: yes
+        cache_valid_time: 3600
+      with_items:
+        - nodejs
+
+    # - name: Install v7.4.0
+    #   command: nvm install v7.4.0
+    #   tags: nvm
